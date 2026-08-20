@@ -1,0 +1,62 @@
+#!/bin/bash
+# sheepdock — launches herdr in its own kitty window, with its own Dock icon.
+#
+# The whole trick is the exec at the bottom: it runs the kitty COPY inside this
+# bundle. That puts the process path inside herdr.app, so macOS attributes the
+# process to this bundle and shows this bundle's icon in the Dock. The real
+# kitty.app is never touched and keeps its own icon.
+set -uo pipefail
+
+die() {
+    osascript -e "display alert \"herdr\" message \"$1\" as critical" >/dev/null 2>&1
+    printf 'sheepdock: %s\n' "$1" >&2
+    exit 1
+}
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+RES="$HERE/../Resources"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/herdr-kitty"
+
+# GUI apps inherit only a minimal PATH, so add the usual bin directories.
+export PATH="$HOME/.local/bin:/usr/local/bin:/opt/homebrew/bin:$PATH"
+
+# Optional user overrides — extra PATH entries, env vars, anything herdr needs.
+# Survives reinstalls, since install.sh never overwrites it.
+[[ -r "$CONFIG_DIR/launcher.env" ]] && . "$CONFIG_DIR/launcher.env"
+
+HERDR="$(command -v herdr 2>/dev/null || true)"
+[[ -n "$HERDR" ]] || die "herdr not found on PATH. Install herdr, or add its directory to $CONFIG_DIR/launcher.env"
+[[ -x "$HERE/kitty" ]] || die "The bundled kitty launcher is missing. Re-run install.sh."
+[[ -e "$RES/Python" ]] || die "kitty seems to be missing or moved. Re-run install.sh."
+
+# herdr refuses to start "nested". Launched from inside a herdr pane this
+# process inherits that pane's HERDR_* variables and would abort on exactly
+# that. A new window is not nesting, so drop the inherited markers. Launched
+# from Finder there is nothing to drop and this is a no-op.
+while IFS='=' read -r _name _; do
+    [[ $_name == HERDR_* ]] && unset "$_name"
+done < <(env)
+
+# Keep the bundled kitty binary in step with the real one. Everything heavy in
+# this bundle is a symlink into kitty.app; only the small launcher binary is a
+# real copy, and after a kitty upgrade it no longer matches the linked
+# resources. Compare a checksum of the ORIGINAL against the one recorded when
+# it was copied — not the files themselves, because ad-hoc re-signing alters
+# the copy and a byte comparison would re-copy on every single launch.
+KITTY_APP="$(cat "$RES/.kitty-path" 2>/dev/null || echo /Applications/kitty.app)"
+REAL="$KITTY_APP/Contents/MacOS/kitty"
+STAMP="$RES/.kitty-source-sha"
+if [[ -x "$REAL" ]]; then
+    _cur="$(/usr/bin/shasum -a 256 "$REAL" | cut -d' ' -f1)"
+    if [[ "$(cat "$STAMP" 2>/dev/null)" != "$_cur" ]]; then
+        cp -f "$REAL" "$HERE/kitty" \
+            && printf '%s' "$_cur" > "$STAMP" \
+            && codesign --force --sign - "$HERE/.." >/dev/null 2>&1
+    fi
+fi
+
+export KITTY_CONFIG_DIRECTORY="$CONFIG_DIR"
+
+# Extra arguments are passed straight to herdr, so you can do e.g.
+#   open -a herdr --args --session scratch
+exec "$HERE/kitty" --title herdr "$HERDR" "$@"
