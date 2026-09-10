@@ -8,6 +8,9 @@ A native macOS launcher that opens [herdr](https://herdr.dev) in its own
 Left: herdr, launched by sheepdock. Right: a kitty window you started yourself.
 Two apps, two icons, one kitty installation.
 
+**Windows:** the same trick with a branded copy of Alacritty's portable build
+lives in [`windows/`](windows/README.md). No admin rights needed.
+
 ## Why
 
 On Linux this is a one-liner: start kitty with `--class herdr`, add a matching

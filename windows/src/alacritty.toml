@@ -1,0 +1,21 @@
+# sheepdock - Alacritty profile used only by the herdr launcher
+# (herdr-terminal.exe). Passed via --config-file, so an Alacritty you install
+# yourself never sees it.
+#
+# Placeholders in {{...}} are filled in by install.ps1. Edit the installed copy
+# under %APPDATA%\sheepdock\alacritty.toml, not this template.
+{{IMPORT}}
+[window]
+title = "herdr"
+# herdr sets the window title to the active workspace; let it.
+dynamic_title = true
+dimensions = { columns = 180, lines = 48 }
+
+[font]
+normal = { family = "{{FONT}}" }
+size = 11.0
+
+# herdr is the "shell" of this window: closing herdr closes the window, and
+# there is never a plain prompt to fall through to.
+[terminal.shell]
+program = "{{HERDR}}"
