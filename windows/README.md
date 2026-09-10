@@ -115,7 +115,7 @@ carry over.
 
 **Fonts go by their DirectWrite family name.** The installer picks
 JetBrainsMono Nerd Font Mono if it is installed, else Cascadia Mono, else
-Consolas, at 12 pt. Nerd Fonts must be named by their short family name in
+Consolas, at 11 pt. Nerd Fonts must be named by their short family name in
 `alacritty.toml` (`"JetBrainsMono NFM"`, not `"JetBrainsMono Nerd Font Mono"`);
 the long name is not found. Ctrl+V is bound to paste, as in Windows Terminal.
 

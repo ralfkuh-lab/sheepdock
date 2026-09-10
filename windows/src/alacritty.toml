@@ -13,7 +13,7 @@ dimensions = { columns = 180, lines = 48 }
 
 [font]
 normal = { family = "{{FONT}}" }
-size = 12.0
+size = 11.0
 
 # Alacritty pastes with Ctrl+Shift+V by default; Windows Terminal users (and
 # dictation tools) expect plain Ctrl+V. Ctrl+Shift+V keeps working too. Ctrl+C
