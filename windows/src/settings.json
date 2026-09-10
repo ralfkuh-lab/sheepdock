@@ -1,0 +1,44 @@
+{
+    "$help": "https://aka.ms/terminal-documentation",
+    "$schema": "https://aka.ms/terminal-profiles-schema",
+
+    // sheepdock - settings for the herdr launcher's private Windows Terminal.
+    // This copy runs in portable mode, so this file lives next to the exe and
+    // your normal Windows Terminal never sees it. Placeholders in {{...}} are
+    // filled in by install.ps1; edit the installed copy under
+    // %LOCALAPPDATA%\Programs\sheepdock\terminal\settings\settings.json.
+
+    "defaultProfile": "{7e1d3b0a-5a2e-4c33-9c1d-6f1a2b3c4d5e}",
+
+    // herdr draws its own tabs and panes
+    "alwaysShowTabs": false,
+    "showTabsInTitlebar": false,
+    "confirmCloseAllTabs": false,
+    "startOnUserLogin": false,
+    "initialCols": 180,
+    "initialRows": 48,
+
+    "profiles": {
+        "defaults": {
+            // Line height can be tuned with "cellHeight": "1.2" inside "font".
+            "font": { "face": "{{FONT}}", "size": 11, "weight": "normal" },
+            "colorScheme": "Campbell",
+            "padding": "4, 2, 4, 2",
+            "scrollbarState": "hidden",
+            // herdr is the shell of this window: when it exits, the window goes.
+            "closeOnExit": "always"
+        },
+        "list": [
+            {
+                "guid": "{7e1d3b0a-5a2e-4c33-9c1d-6f1a2b3c4d5e}",
+                "name": "herdr",
+                "commandline": "{{HERDR}}",
+                "startingDirectory": "%USERPROFILE%",
+                "icon": "{{ICON}}",
+                "hidden": false
+            }
+        ]
+    },
+    "schemes": [],
+    "actions": []
+}

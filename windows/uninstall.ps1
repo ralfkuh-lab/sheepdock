@@ -1,22 +1,23 @@
-# Remove herdr-terminal.exe, its shortcuts and, optionally, the Alacritty profile.
+# Remove the herdr terminal copy, its shortcuts and settings.
 #
-#   .\uninstall.ps1 [-Prefix DIR] [-ConfigDir DIR] [-Purge]
+#   .\uninstall.ps1 [-Prefix DIR]
 #
 #Requires -Version 5.1
 [CmdletBinding()]
 param(
-    [string]$Prefix = (Join-Path $env:LOCALAPPDATA 'Programs\sheepdock'),
-    [string]$ConfigDir = (Join-Path $env:APPDATA 'sheepdock'),
-    # also delete the config directory (your alacritty.toml)
-    [switch]$Purge
+    [string]$Prefix = (Join-Path $env:LOCALAPPDATA 'Programs\sheepdock')
 )
 
 $ErrorActionPreference = 'Stop'
 
-$exe = Join-Path $Prefix 'herdr-terminal.exe'
-$running = Get-Process -Name 'herdr-terminal' -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $exe }
-if ($running) {
-    Write-Host 'herdr-terminal.exe is running. Close the herdr window first.' -ForegroundColor Red
+$exe = Join-Path $Prefix 'terminal\WindowsTerminal.exe'
+if (Get-Process -Name 'WindowsTerminal' -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $exe }) {
+    Write-Host 'The herdr window is open. Close it first.' -ForegroundColor Red
+    exit 1
+}
+$legacyExe = Join-Path $Prefix 'herdr-terminal.exe'
+if (Get-Process -Name 'herdr-terminal' -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $legacyExe }) {
+    Write-Host 'The old Alacritty-based herdr window is open. Close it first.' -ForegroundColor Red
     exit 1
 }
 
@@ -28,19 +29,17 @@ if (Test-Path $startMenu) {
 
 if (Test-Path $Prefix) {
     Remove-Item -Recurse -Force $Prefix
-    Write-Host "removed $Prefix"
+    Write-Host "removed $Prefix (including the terminal settings)"
 } else {
     Write-Host "nothing to remove at $Prefix"
 }
 
-if ($Purge) {
-    if (Test-Path $ConfigDir) {
-        Remove-Item -Recurse -Force $ConfigDir
-        Write-Host "removed $ConfigDir"
-    }
-} else {
-    Write-Host "kept $ConfigDir (use -Purge to remove it)"
+# config directory of the earlier Alacritty-based launcher
+$legacyConfig = Join-Path $env:APPDATA 'sheepdock'
+if (Test-Path $legacyConfig) {
+    Remove-Item -Recurse -Force $legacyConfig
+    Write-Host "removed $legacyConfig"
 }
 
 Write-Host 'If herdr was pinned to the taskbar, the pin is now dead - right-click it and unpin.'
-Write-Host 'herdr itself and any Alacritty you installed yourself were never modified.'
+Write-Host 'herdr itself and your regular Windows Terminal were never modified.'
