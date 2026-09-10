@@ -134,7 +134,13 @@ if ((Test-Path $config) -and -not $Force) {
 } else {
     Add-Type -AssemblyName System.Drawing
     $fonts = (New-Object System.Drawing.Text.InstalledFontCollection).Families | ForEach-Object Name
-    $font = if ($fonts -contains 'Cascadia Mono') { 'Cascadia Mono' } else { 'Consolas' }
+    # Prefer a Nerd Font if one is installed (herdr and the agent CLIs use its
+    # glyphs), then Windows 11's Cascadia Mono, then Consolas. Alacritty matches
+    # the DirectWrite family name, which for Nerd Fonts is the short one
+    # ("JetBrainsMono NFM"), not "JetBrainsMono Nerd Font Mono".
+    $font = 'Consolas'
+    if ($fonts -contains 'Cascadia Mono') { $font = 'Cascadia Mono' }
+    if ($fonts -contains 'JetBrainsMono NFM') { $font = 'JetBrainsMono NFM' }
 
     # Inherit the user's own Alacritty config when there is one, so colours and
     # keybindings carry over. Alacritty errors on a missing import, hence the check.

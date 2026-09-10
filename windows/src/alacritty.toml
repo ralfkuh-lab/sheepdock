@@ -13,7 +13,15 @@ dimensions = { columns = 180, lines = 48 }
 
 [font]
 normal = { family = "{{FONT}}" }
-size = 11.0
+size = 12.0
+
+# Alacritty pastes with Ctrl+Shift+V by default; Windows Terminal users (and
+# dictation tools) expect plain Ctrl+V. Ctrl+Shift+V keeps working too. Ctrl+C
+# is left alone so it still interrupts programs.
+[[keyboard.bindings]]
+key = "V"
+mods = "Control"
+action = "Paste"
 
 # herdr is the "shell" of this window: closing herdr closes the window, and
 # there is never a plain prompt to fall through to.

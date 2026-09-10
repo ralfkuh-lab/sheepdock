@@ -113,6 +113,12 @@ profile is passed explicitly with `--config-file`. If you have an Alacritty
 config of your own there, the profile imports it, so colours and key bindings
 carry over.
 
+**Fonts go by their DirectWrite family name.** The installer picks
+JetBrainsMono Nerd Font Mono if it is installed, else Cascadia Mono, else
+Consolas, at 12 pt. Nerd Fonts must be named by their short family name in
+`alacritty.toml` (`"JetBrainsMono NFM"`, not `"JetBrainsMono Nerd Font Mono"`);
+the long name is not found. Ctrl+V is bound to paste, as in Windows Terminal.
+
 **Updating Alacritty means re-running `install.ps1`.** The portable build is a
 single file, and the icon lives inside that file, so a newer Alacritty is
 simply downloaded and branded again. Your `alacritty.toml` is kept unless you
